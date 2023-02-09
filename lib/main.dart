@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,11 +38,15 @@ class MyAppState extends ChangeNotifier {
   var favorites = <WordPair>[];
 
   void toggleFavorite() {
+    log('toggleFavorite:' + current.toString());
+
     if (favorites.contains(current)) {
       favorites.remove(current);
     } else {
       favorites.add(current);
     }
+
+    log('Favorites:' + favorites.join(","));
   }
 }
 
@@ -49,6 +55,14 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
+    log(pair.toString());
+
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
 
     return Scaffold(
       body: Center(
@@ -60,7 +74,16 @@ class MyHomePage extends StatelessWidget {
             SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: Text('Like'),
+                ),
+                SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
                     appState.getNext();
